@@ -27,21 +27,60 @@
                                 <div class="tracking-wide">
                                     {{ $post->user->name }}
                                 </div>
-
                             </div>
                             <div class="text-center mt-5 whitespace-pre-line">"{{ $post->body }}"</div>
                             @can('update', $post)
                                 <div class="flex justify-end gap-3">
                                     <a href="{{ route('posts.edit', $post->uuid) }}"
                                        class="bg-blue-800 text-white p-2 rounded">Update</a>
-                                    <form action="{{ route('posts.destroy', $post->id) }}" class="delete-btn" method="POST">
+                                    <form action="{{ route('posts.destroy', $post->id) }}" class="delete-btn"
+                                          method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-800 text-white p-2 rounded">Delete</button>
                                     </form>
-
                                 </div>
                             @endcan
+                            <div class="flex gap-3">
+                                @foreach($reactions as $r)
+                                    <a>{{ $r->reaction }}</a>
+                                @endforeach
+                            </div>
+                            <div class="mt-5">
+                                <x-posts.comment-form action="{{ route('comments.store', $post->id) }}"/>
+                            </div>
+                            <div class="mt-5">
+                                <div class="font-bol">Comments :</div>
+                                @foreach($post->comments as $comment)
+                                    <div class="mb-3">
+                                        <div class="flex gap-3 items-center">
+                                            <div class="font-bold">
+                                                {{ $comment->user->name }}
+                                            </div>
+                                            <div class="text-sm flex gap-1 items-center">
+                                                @can('update', $comment)
+                                                    <a href="{{ route('comments.edit', $comment->id) }}"
+                                                       class="text-blue-500 tracking-wide me-1 underline">Update</a>
+                                                @endcannot
+                                                @can('delete', $comment)
+                                                    <form action="{{ route('comments.destroy', $comment->id) }}" method="post"
+                                                          class="delete-comment-form">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                                class="text-red-500 tracking-wide me-1 underline">Delete
+                                                        </button>
+                                                    </form>
+
+                                                @endcan
+                                            </div>
+                                        </div>
+
+                                        <div>{{ $comment->comment }}</div>
+                                    </div>
+
+                                @endforeach
+                            </div>
                         </div>
 
                     @endforeach
@@ -54,21 +93,32 @@
             document.querySelectorAll('.delete-btn').forEach(function (deleteBtn) {
                 deleteBtn.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You won't be able to revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#d33",
-                        cancelButtonColor: "#536266",
-                        confirmButtonText: "Yes, delete it!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            deleteBtn.submit();
-                        }
-                    });
+                    alert(deleteBtn);
                 });
             });
+
+            document.querySelectorAll('.delete-comment-form').forEach(function(deleteCommentForm){
+                deleteCommentForm.addEventListener('submit', function(e){
+                    e.preventDefault();
+                   alert(deleteCommentForm);
+                })
+            });
+
+            function alert(form){
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#536266",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
         </script>
     @endpush
 </x-app-layout>

@@ -4,16 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Requests\Post\UpdateRequest;
+use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reaction;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with('user')->simplePaginate(10);
+        $posts = Post::with('user', 'comments.user')->simplePaginate(10);
+        $reactions = Reaction::all();
         return view('dashboard', [
-            'posts' => $posts
+            'posts' => $posts,
+            'reactions' => $reactions
         ]);
     }
 
